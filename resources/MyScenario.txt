@@ -1,0 +1,10 @@
+# voorbeeld scenario voor test
+# verwachte methodenaam + verwachte return-value + verwachte parameters (max 3)
+# seperator = spatie
+doeA void 5
+doeA void 42
+getA 5
+doeB void Bla
+doeC
+getC A
+getB Foo 5
