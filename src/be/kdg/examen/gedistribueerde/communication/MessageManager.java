@@ -46,6 +46,20 @@ public final class MessageManager {
         }
     }
 
+    public MessageManager(NetworkAddress myAddress) {
+        this.myAddress = myAddress;
+
+        try {
+            // create a server socket with the given address
+            this.serverSocket = new ServerSocket(this.myAddress.getPortNumber());
+
+        } catch (IOException e) {
+            System.err.println("Failed to create server socket");
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+
     public NetworkAddress getMyAddress() {
         return myAddress;
     }

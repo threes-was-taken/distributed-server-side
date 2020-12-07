@@ -18,7 +18,7 @@ public class Client {
         // stap 1
         server.log(new DocumentImpl("Dit is een testje"));
 
-        // stap 2
+        /*// stap 2
         Document doc = server.create("Dit is nog een testje...");
         document.setText(doc.getText());
         server.log(document);
@@ -31,6 +31,6 @@ public class Client {
 
         // stap 4
         server.type(document, "Hello, world!");
-        server.log(document);
+        server.log(document);*/
     }
 }
