@@ -5,6 +5,7 @@ import be.kdg.examen.gedistribueerde.document.DocumentImpl;
 import be.kdg.examen.gedistribueerde.communication.MessageManager;
 import be.kdg.examen.gedistribueerde.communication.MethodCallMessage;
 import be.kdg.examen.gedistribueerde.communication.NetworkAddress;
+import be.kdg.examen.gedistribueerde.document.DocumentStub;
 
 public class ServerSkeleton {
     private final MessageManager messageManager;
@@ -18,17 +19,14 @@ public class ServerSkeleton {
 
 //======== LISTENERS =================
 
-    public void listen(){
+    public void listen() {
         System.out.println("Server started listening on " + this.messageManager.getMyAddress());
 
         //looping to wait for requests
-        while (true){
+        while (true) {
 
             // sync wait for req
             MethodCallMessage req = messageManager.wReceive();
-
-            //ack that we have received the req
-            ack(req.getOriginator());
 
             //handle the request
             handleRequest(req);
@@ -62,31 +60,42 @@ public class ServerSkeleton {
         }
     }
 
-    private void ack(NetworkAddress originator) {
-        MethodCallMessage ack = new MethodCallMessage(this.messageManager.getMyAddress(), "ack");
-        ack.setParameter("result", "ok");
-        this.messageManager.send(ack, originator);
-    }
-
     //======== DELEGATIONS =================
     private void handleType(MethodCallMessage req) {
-        String document = req.getParameter("document");
+        String documentSkeletonAddress = req.getParameter("documentAddress");
+        String skeletonIP = documentSkeletonAddress.split(":")[0];
+        int skeletonPORT = Integer.parseInt(documentSkeletonAddress.split(":")[1]);
         String text = req.getParameter("text");
 
-        this.documentServer.type(new DocumentImpl(document), text);
+        Document document = new DocumentStub(new NetworkAddress(skeletonIP, skeletonPORT), this.messageManager);
+
+        this.documentServer.type(document, text);
+
+        sendEmptyReply(req, messageManager);
     }
 
     private void handleToLower(MethodCallMessage req) {
-        String text = req.getParameter("document");
+        String documentSkeletonAddress = req.getParameter("documentAddress");
+        String skeletonIP = documentSkeletonAddress.split(":")[0];
+        int skeletonPORT = Integer.parseInt(documentSkeletonAddress.split(":")[1]);
 
-        this.documentServer.toLower(new DocumentImpl(text));
+        Document document = new DocumentStub(new NetworkAddress(skeletonIP, skeletonPORT), this.messageManager);
+
+        this.documentServer.toLower(document);
+
+        sendEmptyReply(req, messageManager);
     }
 
     private void handleToUpper(MethodCallMessage req) {
-        String text = req.getParameter("document");
+        String documentSkeletonAddress = req.getParameter("documentAddress");
+        String skeletonIP = documentSkeletonAddress.split(":")[0];
+        int skeletonPORT = Integer.parseInt(documentSkeletonAddress.split(":")[1]);
 
-        this.documentServer.toUpper(new DocumentImpl(text));
+        Document document = new DocumentStub(new NetworkAddress(skeletonIP, skeletonPORT), this.messageManager);
 
+        this.documentServer.toUpper(document);
+
+        sendEmptyReply(req, messageManager);
     }
 
     private void handleCreate(MethodCallMessage req) {
@@ -99,8 +108,25 @@ public class ServerSkeleton {
     }
 
     private void handleLog(MethodCallMessage req) {
+        String documentSkeletonAddress = req.getParameter("documentAddress");
+        String skeletonIP = documentSkeletonAddress.split(":")[0];
+        int skeletonPORT = Integer.parseInt(documentSkeletonAddress.split(":")[1]);
+
         String message = req.getParameter("documentText");
 
-        this.documentServer.log(new DocumentImpl(message));
+        Document document = new DocumentStub(new NetworkAddress(skeletonIP, skeletonPORT), this.messageManager);
+
+        document.setText(message);
+
+        documentServer.log(document);
+
+        MethodCallMessage resp = new MethodCallMessage(messageManager.getMyAddress(), "logResponse");
+        messageManager.send(resp, req.getOriginator());
+    }
+
+    //======== PRIVATE METHODS =================
+    private static void sendEmptyReply(MethodCallMessage request, MessageManager messageManager) {
+        MethodCallMessage reply = new MethodCallMessage(messageManager.getMyAddress(), "Ok");
+        messageManager.send(reply, request.getOriginator());
     }
 }

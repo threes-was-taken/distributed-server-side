@@ -8,20 +8,13 @@ import be.kdg.examen.gedistribueerde.communication.NetworkAddress;
 import java.util.Objects;
 
 public class DocumentStub implements Document{
-    private NetworkAddress replyAddress;
-    private final NetworkAddress originAddress;
+    private final NetworkAddress replyAddress;
     private final MessageManager messageManager;
 
     //======== CONSTRUCTORS =================
 
-    public DocumentStub(NetworkAddress replyAddress, NetworkAddress originAddress, MessageManager messageManager) {
+    public DocumentStub(NetworkAddress replyAddress, MessageManager messageManager) {
         this.replyAddress = replyAddress;
-        this.originAddress = originAddress;
-        this.messageManager = messageManager;
-    }
-
-    public DocumentStub(NetworkAddress originAddress, MessageManager messageManager) {
-        this.originAddress = originAddress;
         this.messageManager = messageManager;
     }
 
@@ -71,17 +64,20 @@ public class DocumentStub implements Document{
         methodCall.setParameter("textToSet", text);
         messageManager.send(methodCall, this.replyAddress);
 
-        waitForAck();
+        MethodCallMessage resp = messageManager.wReceive();
+        if (!resp.getMethodName().equals("setText")){
+            throw new RuntimeException("Expected setText response, got " + resp.getMethodName());
+        }
     }
 
     @Override
     public void append(char c) {
-        String character = c + " ";
         MethodCallMessage methodCall = new MethodCallMessage(this.messageManager.getMyAddress(), "appendText");
-        methodCall.setParameter("toAppend", character);
-        messageManager.send(methodCall, this.replyAddress);
+        methodCall.setParameter("toAppend", String.valueOf(c));
 
         waitForAck();
+
+        messageManager.send(methodCall, this.replyAddress);
     }
 
     @Override
@@ -92,28 +88,9 @@ public class DocumentStub implements Document{
         MethodCallMessage methodCall = new MethodCallMessage(this.messageManager.getMyAddress(), "setChar");
         methodCall.setParameter("positionChar", pos);
         methodCall.setParameter("character", character);
-        messageManager.send(methodCall, this.replyAddress);
 
         waitForAck();
-    }
 
-    //======== OVERRIDE METHODS =================
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        DocumentStub that = (DocumentStub) o;
-        return originAddress.equals(that.originAddress);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(originAddress);
-    }
-
-    @Override
-    public String toString() {
-        return this.originAddress.toString();
+        messageManager.send(methodCall, this.replyAddress);
     }
 }
