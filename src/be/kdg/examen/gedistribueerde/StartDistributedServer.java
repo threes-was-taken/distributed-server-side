@@ -1,7 +1,5 @@
 package be.kdg.examen.gedistribueerde;
 
-import be.kdg.examen.gedistribueerde.client.Client;
-import be.kdg.examen.gedistribueerde.client.DocumentImpl;
 import be.kdg.examen.gedistribueerde.communication.NetworkAddress;
 import be.kdg.examen.gedistribueerde.server.Server;
 import be.kdg.examen.gedistribueerde.server.ServerImpl;

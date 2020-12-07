@@ -1,5 +1,5 @@
 /* Dries created on 12/5/2020 inside the package - be.kdg.examen.gedistribueerde.client */
-package be.kdg.examen.gedistribueerde.client;
+package be.kdg.examen.gedistribueerde.document;
 
 import be.kdg.examen.gedistribueerde.communication.MessageManager;
 import be.kdg.examen.gedistribueerde.communication.MethodCallMessage;

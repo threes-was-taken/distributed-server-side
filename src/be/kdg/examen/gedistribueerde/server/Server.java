@@ -1,6 +1,6 @@
 package be.kdg.examen.gedistribueerde.server;
 
-import be.kdg.examen.gedistribueerde.client.Document;
+import be.kdg.examen.gedistribueerde.document.Document;
 
 public interface Server {
     void log(Document document);

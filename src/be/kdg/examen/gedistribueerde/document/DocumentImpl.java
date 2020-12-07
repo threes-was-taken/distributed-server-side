@@ -1,4 +1,4 @@
-package be.kdg.examen.gedistribueerde.client;
+package be.kdg.examen.gedistribueerde.document;
 
 import java.awt.event.TextListener;
 
