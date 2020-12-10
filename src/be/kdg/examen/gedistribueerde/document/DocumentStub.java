@@ -22,7 +22,7 @@ public class DocumentStub implements Document{
     public static void checkEmptyReply(MessageManager messageManager) {
         MethodCallMessage reply = messageManager.wReceive();
         if (!"ack".equals(reply.getMethodName())) {
-            throw new RuntimeException("Expected Ok, got " + reply.getMethodName());
+            throw new RuntimeException("Expected ack, got " + reply.getMethodName());
         }
     }
 
