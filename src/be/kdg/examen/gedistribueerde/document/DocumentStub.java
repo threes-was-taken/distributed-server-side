@@ -19,22 +19,11 @@ public class DocumentStub implements Document{
     }
 
     //======== PRIVATE METHODS =================
-
-    private void waitForAck(){
-        // infinite loop waiting for acknowledge
-        MethodCallMessage ack = waitForResponse();
-
-        if (!ack.getMethodName().equals("ack")) {
-            System.err.println("Incorrect acknowledgement received");
-            return;
+    public static void checkEmptyReply(MessageManager messageManager) {
+        MethodCallMessage reply = messageManager.wReceive();
+        if (!"ack".equals(reply.getMethodName())) {
+            throw new RuntimeException("Expected Ok, got " + reply.getMethodName());
         }
-
-        if (!ack.getParameter("result").equals("ok")){
-            System.err.println("Expected to have \"ok\" received with acknowledgement");
-            return;
-        }
-
-        System.out.println("Acknowledgement received");
     }
 
     private MethodCallMessage waitForResponse() {
@@ -74,23 +63,16 @@ public class DocumentStub implements Document{
     public void append(char c) {
         MethodCallMessage methodCall = new MethodCallMessage(this.messageManager.getMyAddress(), "appendText");
         methodCall.setParameter("toAppend", String.valueOf(c));
-
-        waitForAck();
-
         messageManager.send(methodCall, this.replyAddress);
+        checkEmptyReply(messageManager);
     }
 
     @Override
     public void setChar(int position, char c) {
-        String character = c + " ";
-        String pos = position + " ";
-
         MethodCallMessage methodCall = new MethodCallMessage(this.messageManager.getMyAddress(), "setChar");
-        methodCall.setParameter("positionChar", pos);
-        methodCall.setParameter("character", character);
-
-        waitForAck();
-
+        methodCall.setParameter("positionChar", String.valueOf(position));
+        methodCall.setParameter("character", String.valueOf(c));
         messageManager.send(methodCall, this.replyAddress);
+        checkEmptyReply(messageManager);
     }
 }

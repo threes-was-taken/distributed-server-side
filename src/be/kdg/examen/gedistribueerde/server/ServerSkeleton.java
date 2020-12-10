@@ -69,7 +69,7 @@ public class ServerSkeleton {
 
         Document document = new DocumentStub(new NetworkAddress(skeletonIP, skeletonPORT), this.messageManager);
 
-        this.documentServer.type(document, text);
+        documentServer.type(document, text);
 
         sendEmptyReply(req, messageManager);
     }
@@ -81,7 +81,7 @@ public class ServerSkeleton {
 
         Document document = new DocumentStub(new NetworkAddress(skeletonIP, skeletonPORT), this.messageManager);
 
-        this.documentServer.toLower(document);
+        documentServer.toLower(document);
 
         sendEmptyReply(req, messageManager);
     }
@@ -93,7 +93,7 @@ public class ServerSkeleton {
 
         Document document = new DocumentStub(new NetworkAddress(skeletonIP, skeletonPORT), this.messageManager);
 
-        this.documentServer.toUpper(document);
+        documentServer.toUpper(document);
 
         sendEmptyReply(req, messageManager);
     }
@@ -126,7 +126,7 @@ public class ServerSkeleton {
 
     //======== PRIVATE METHODS =================
     private static void sendEmptyReply(MethodCallMessage request, MessageManager messageManager) {
-        MethodCallMessage reply = new MethodCallMessage(messageManager.getMyAddress(), "Ok");
+        MethodCallMessage reply = new MethodCallMessage(messageManager.getMyAddress(), "ack");
         messageManager.send(reply, request.getOriginator());
     }
 }
