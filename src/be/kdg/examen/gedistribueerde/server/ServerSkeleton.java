@@ -64,15 +64,13 @@ public class ServerSkeleton {
 
     //======== DELEGATIONS =================
     private void handleType(MethodCallMessage req) {
-        /* document call by ref
+        // document call by ref
         String documentSkeletonAddress = req.getParameter("documentAddress");
         String skeletonIP = documentSkeletonAddress.split(":")[0];
         int skeletonPORT = Integer.parseInt(documentSkeletonAddress.split(":")[1]);
-        */
         String text = req.getParameter("text");
-        Document document = new DocumentImpl(req.getParameter("document"));
         //call by ref
-        /*Document document = new DocumentStub(new NetworkAddress(skeletonIP, skeletonPORT), this.messageManager);*/
+        Document document = new DocumentStub(new NetworkAddress(skeletonIP, skeletonPORT), this.messageManager);
 
         documentServer.type(document, text);
 
@@ -97,7 +95,7 @@ public class ServerSkeleton {
        /* sendEmptyReply(req, messageManager);*/
 
         MethodCallMessage response = new MethodCallMessage(messageManager.getMyAddress(), "toLowerResponse");
-        response.setParameter("lower", document.getText() );
+        response.setParameter("lower", document.getText());
         messageManager.send(response, req.getOriginator());
     }
 
