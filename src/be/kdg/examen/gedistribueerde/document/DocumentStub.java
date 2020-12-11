@@ -5,8 +5,6 @@ import be.kdg.examen.gedistribueerde.communication.MessageManager;
 import be.kdg.examen.gedistribueerde.communication.MethodCallMessage;
 import be.kdg.examen.gedistribueerde.communication.NetworkAddress;
 
-import java.util.Objects;
-
 public class DocumentStub implements Document{
     private final NetworkAddress replyAddress;
     private final MessageManager messageManager;

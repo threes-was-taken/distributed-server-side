@@ -4,7 +4,10 @@ import be.kdg.examen.gedistribueerde.document.Document;
 import be.kdg.examen.gedistribueerde.communication.MessageManager;
 import be.kdg.examen.gedistribueerde.communication.MethodCallMessage;
 import be.kdg.examen.gedistribueerde.communication.NetworkAddress;
+import be.kdg.examen.gedistribueerde.document.DocumentImpl;
 import be.kdg.examen.gedistribueerde.document.DocumentStub;
+
+import java.lang.reflect.Method;
 
 public class ServerSkeleton {
     private final MessageManager messageManager;
@@ -61,12 +64,15 @@ public class ServerSkeleton {
 
     //======== DELEGATIONS =================
     private void handleType(MethodCallMessage req) {
+        /* document call by ref
         String documentSkeletonAddress = req.getParameter("documentAddress");
         String skeletonIP = documentSkeletonAddress.split(":")[0];
         int skeletonPORT = Integer.parseInt(documentSkeletonAddress.split(":")[1]);
+        */
         String text = req.getParameter("text");
-
-        Document document = new DocumentStub(new NetworkAddress(skeletonIP, skeletonPORT), this.messageManager);
+        Document document = new DocumentImpl(req.getParameter("document"));
+        //call by ref
+        /*Document document = new DocumentStub(new NetworkAddress(skeletonIP, skeletonPORT), this.messageManager);*/
 
         documentServer.type(document, text);
 
@@ -74,27 +80,45 @@ public class ServerSkeleton {
     }
 
     private void handleToLower(MethodCallMessage req) {
+        /*
+        Call by ref
         String documentSkeletonAddress = req.getParameter("documentAddress");
         String skeletonIP = documentSkeletonAddress.split(":")[0];
         int skeletonPORT = Integer.parseInt(documentSkeletonAddress.split(":")[1]);
 
         Document document = new DocumentStub(new NetworkAddress(skeletonIP, skeletonPORT), this.messageManager);
+        */
+
+        //call by val
+        Document document = new DocumentImpl(req.getParameter("lower"));
 
         documentServer.toLower(document);
 
-        sendEmptyReply(req, messageManager);
+       /* sendEmptyReply(req, messageManager);*/
+
+        MethodCallMessage response = new MethodCallMessage(messageManager.getMyAddress(), "toLowerResponse");
+        response.setParameter("lower", document.getText() );
+        messageManager.send(response, req.getOriginator());
     }
 
     private void handleToUpper(MethodCallMessage req) {
+        /*
+        Call by ref
         String documentSkeletonAddress = req.getParameter("documentAddress");
         String skeletonIP = documentSkeletonAddress.split(":")[0];
         int skeletonPORT = Integer.parseInt(documentSkeletonAddress.split(":")[1]);
 
         Document document = new DocumentStub(new NetworkAddress(skeletonIP, skeletonPORT), this.messageManager);
+        */
+
+        //call by val
+        Document document = new DocumentImpl(req.getParameter("upper"));
 
         documentServer.toUpper(document);
 
-        sendEmptyReply(req, messageManager);
+        MethodCallMessage response = new MethodCallMessage(messageManager.getMyAddress(), "toUpperResponse");
+        response.setParameter("upper", document.getText());
+        messageManager.send(response, req.getOriginator());
     }
 
     private void handleCreate(MethodCallMessage req) {
@@ -107,17 +131,23 @@ public class ServerSkeleton {
     }
 
     private void handleLog(MethodCallMessage req) {
+        /*
+        This way implements the call by ref method, got feedback this isn't necessary so this will happen via call by val
+
         String documentSkeletonAddress = req.getParameter("documentAddress");
         String skeletonIP = documentSkeletonAddress.split(":")[0];
-        int skeletonPORT = Integer.parseInt(documentSkeletonAddress.split(":")[1]);
+        int skeletonPORT = Integer.parseInt(documentSkeletonAddress.split(":")[1]);*/
 
         String message = req.getParameter("documentText");
 
+        /*
+        call by ref
+
         Document document = new DocumentStub(new NetworkAddress(skeletonIP, skeletonPORT), this.messageManager);
 
-        document.setText(message);
+        document.setText(message);*/
 
-        documentServer.log(document);
+        documentServer.log(new DocumentImpl(message));
 
         MethodCallMessage resp = new MethodCallMessage(messageManager.getMyAddress(), "logResponse");
         messageManager.send(resp, req.getOriginator());
