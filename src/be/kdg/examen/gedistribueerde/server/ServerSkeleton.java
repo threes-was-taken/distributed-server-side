@@ -92,8 +92,10 @@ public class ServerSkeleton {
 
         documentServer.toLower(document);
 
+        //Call by ref
        /* sendEmptyReply(req, messageManager);*/
 
+        //Call by val
         MethodCallMessage response = new MethodCallMessage(messageManager.getMyAddress(), "toLowerResponse");
         response.setParameter("lower", document.getText());
         messageManager.send(response, req.getOriginator());
@@ -114,9 +116,13 @@ public class ServerSkeleton {
 
         documentServer.toUpper(document);
 
+        //call by val
         MethodCallMessage response = new MethodCallMessage(messageManager.getMyAddress(), "toUpperResponse");
         response.setParameter("upper", document.getText());
         messageManager.send(response, req.getOriginator());
+
+        // call by ref
+        // sendEmptyReply(req, messageManager);
     }
 
     private void handleCreate(MethodCallMessage req) {
